@@ -1,0 +1,51 @@
+
+try{
+    $tab=Get-ADUser -Filter 'employeeNumber -eq "{{ e.employeeNumber }}" -and employeeType -eq "{{ e.employeeType }}"' -Properties "DistinguishedName"
+	if ($tab["DistinguishedName"] -ne "{{ dn }}"){
+	    try{
+	        $dn=$tab["DistinguishedName"]
+            move-adObject "$dn" -targetpath "{{ path }}"
+	    }catch{
+	        Write-Host $_
+            exit 1
+	    }
+	}
+	$UserExists = $true
+}
+catch [Microsoft.ActiveDirectory.Management.ADIdentityResolutionException] {
+    $UserExists = $false
+} 
+if ($UserExists -eq $false){
+    $np = @{
+       Path="{{ path }}"
+       EmployeeNumber="{{ e.employeeNumber }}"
+       Name="{{ e.cn }}"
+       DisplayName="{{ e.displayName }}"
+       GivenName="{{ e.givenName }}"
+       Surname="{{ e.sn }}"
+       SamAccountName="{{ e.uid }}"
+       EmailAddress="{{ e.mail }}"
+       UserPrincipalName = "{{ e.uid }}" + '@' + "{{ domain }}"
+       Enabled=$false
+       CannotChangePassword=$true
+       ChangePasswordAtLogon = $false
+    }
+    try{
+        new-adUser @np -OtherAttributes @{ 'EmployeeType' = '{{ e.employeeType }}' }
+        Write-Host "Identity created"
+    }catch{
+        Write-Host $_
+        exit 1
+    }
+}else{
+    try{
+        $dn=$tab["DistinguishedName"]
+        $UserPrincipalName = "{{ e.uid }}" + '@' + "{{ domain }}"
+        set-adUser -Identity "$dn" -SamAccountName "{{ e.uid }}" -DisplayName "{{e.displayName}}" -GivenName "{{ e.givenName }}" -EmailAddress "{{ e.mail }}" -UserPrincipalName "$UserPrincipalName"
+        Write-Host "Identity modified"
+    }catch{
+        Write-Host $_
+        exit 1
+    }
+}
+exit 0
