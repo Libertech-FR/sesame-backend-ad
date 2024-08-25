@@ -15,6 +15,7 @@ jobs:
           mkdir -p .debpkg/var/lib/sesame-daemon/backends-modules/ad/etc
           mkdir -p .debpkg/var/lib/sesame-daemon/backends-modules/ad/bin
           mkdir -p .debpkg/var/lib/sesame-daemon/backends-modules/ad/lib
+          mkdir -p .debpkg/var/lib/sesame-daemon/backends-modules/ad/ps1_templates
           cp src/bin/* .debpkg/var/lib/sesame-daemon/backends-modules/ad/bin
           cp src/lib/* .debpkg/var/lib/sesame-daemon/backends-modules/ad/lib
           cp src/ps1_templates/* .debpkg/var/lib/sesame-daemon/backends-modules/ad/ps1_templates
@@ -22,6 +23,7 @@ jobs:
           cp src/config.yml .debpkg/var/lib/sesame-daemon/backends-modules/ad
           cp README.md .debpkg/var/lib/sesame-daemon/backends-modules/ad
           cp install.sh .debpkg/var/lib/sesame-daemon/backends-modules/ad
+          cp requirements.txt .debpkg/var/lib/sesame-daemon/backends-modules/ad
           chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/ad/install.sh
       - uses: jiro4989/build-deb-action@v3
         with:
