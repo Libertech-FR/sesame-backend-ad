@@ -14,6 +14,7 @@ jobs:
         run: |
           mkdir -p .debpkg/var/lib/sesame-daemon/backends-modules/ad/etc
           mkdir -p .debpkg/var/lib/sesame-daemon/backends-modules/ad/bin
+          mkdir -p .debpkg/var/lib/sesame-daemon/backends-modules/ad/lib
           cp src/bin/* .debpkg/var/lib/sesame-daemon/backends-modules/ad/bin
           cp src/lib/* .debpkg/var/lib/sesame-daemon/backends-modules/ad/lib
           cp src/ps1_templates/* .debpkg/var/lib/sesame-daemon/backends-modules/ad/ps1_templates
