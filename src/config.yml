@@ -1,0 +1,24 @@
+_version: 1
+
+name: 'ad'
+description: 'Backend for ad'
+active: true
+actions:
+  IDENTITY_PASSWORD_CHANGE:
+    script: "changepwd.py"
+    onError: 'stop'
+  IDENTITY_PASSWORD_RESET:
+    script: "resetpwd.py"
+    onError: 'stop'
+  IDENTITY_CREATE:
+    script: 'upsertidentity.py'
+    onError: 'stop'
+  IDENTITY_UPDATE:
+    script: 'upsertidentity.py'
+    onError: 'stop'
+  IDENTITY_DELETE:
+    script: 'delentity.py'
+    onError: 'stop'
+  PING_TARGET:
+    script: 'ping.py'
+    onError: 'stop'
