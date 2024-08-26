@@ -1,3 +1,4 @@
+#!/usr/bin/python3 -u
 import sys
 sys.path.append('../lib')
 import ad_utils as ad

@@ -37,15 +37,17 @@ read -p "Domaine pour UserPrincipalName : " DOMAIN
 echo "Génération du fichier de configuration"
 CONFFILE=${INSTALL}/etc/config.conf
 echo "host=${HOST}" > ${CONFFILE}
-echo "user=${DN}" >> ${CONFFILE}
+echo "user=${USER}" >> ${CONFFILE}
 echo "password=${PASSWORD}" >> ${CONFFILE}
 echo "base=${BASE}" >> ${CONFFILE}
 echo "domain=${DOMAIN}" >> ${CONFFILE}
 echo "backendFor=adm,etd,esn" >> ${CONFFILE}
 chmod 600 ${CONFFILE}
 echo "Generation d'une clé ssh"
-mkdir $INSTALL/.ssh
-ssh-keygen -t ed25519 -f ${INSTALL}/.ssh/id_ed25519 -N ''
+if [ ! -f $INSTALL/.ssh/id_ed25519 ];then
+  mkdir $INSTALL/.ssh 2>/dev/null
+  ssh-keygen -t ed25519 -f ${INSTALL}/.ssh/id_ed25519 -N ''
+fi
 ./copy_ssh_key.py --server=${HOST} --user=${USER} --password="${PASSWORD}" --keyfile=${INSTALL}/.ssh/id_ed25519.pub
 OK=$?
 if [ $OK -ne 0 ];then
