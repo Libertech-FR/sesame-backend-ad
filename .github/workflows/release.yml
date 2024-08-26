@@ -23,8 +23,10 @@ jobs:
           cp src/config.yml .debpkg/var/lib/sesame-daemon/backends-modules/ad
           cp README.md .debpkg/var/lib/sesame-daemon/backends-modules/ad
           cp install.sh .debpkg/var/lib/sesame-daemon/backends-modules/ad
-          cp requirements.txt .debpkg/var/lib/sesame-daemon/backends-modules/ad
+          cp copy_ssh_key.py .debpkg/var/lib/sesame-daemon/backends-modules/ad
           chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/ad/install.sh
+          chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/ad/copy_ssh_key.py
+          cp requirements.txt .debpkg/var/lib/sesame-daemon/backends-modules/ad
       - uses: jiro4989/build-deb-action@v3
         with:
            package: sesame-backend-ad
@@ -32,7 +34,7 @@ jobs:
            maintainer: Libertech
            version: ${{ github.ref }} # refs/tags/v*.*.*
            arch: 'amd64'
-           depends: 'python3, python3-jinja2, python3-paramiko, sesame-daemon'
+           depends: 'python3, python3-jinja2, python3-paramiko, sesame-daemon, openssh-client'
            desc: 'AD backend for sesame-daemon'
            homepage: 'https://github.com/Libertech-FR/sesame-backend-ad'
       - uses: svenstaro/upload-release-action@v2

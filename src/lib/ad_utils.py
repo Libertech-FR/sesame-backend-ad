@@ -1,7 +1,9 @@
 import os.path
+import sys
+sys.path.append('.')
 import paramiko
 from jinja2 import FileSystemLoader
-import src.lib.backend_utils as u
+import backend_utils as u
 import jinja2
 
 __DEBUG__=0
@@ -32,7 +34,11 @@ def exec_cmd(command):
     return content
 
 def compose_dn(entity):
+
     rdnValue=u.find_key(entity,'cn')
+    x=type(rdnValue)
+    if rdnValue is None:
+        rdnValue='test'
     branchAttr=u.config('branchAttr','')
     branch  = ''
     if branchAttr != '':
@@ -55,6 +61,28 @@ def dn_superior(dn):
    tab.pop(0)
    return ','.join(tab)
 
+
+def test_conn():
+    environment = jinja2.Environment(loader=FileSystemLoader("../ps1_templates/"))
+    template = environment.get_template('ping.template')
+    content=template.render({})
+    scriptName='ping.ps1'
+    client = open_ssh_conn()
+    sshfile = client.open_sftp()
+    with sshfile.open(scriptName, mode="w") as message:
+        message.write(content)
+    ##execution du script
+    chan = client.get_transport().open_session()
+    chan.exec_command('powershell -ExecutionPolicy Bypass -NonInteractive -File ping.ps1')
+    exitCode = chan.recv_exit_status()
+    content = chan.recv(4096).decode('utf-8')
+    del client
+    if exitCode == 0:
+        print(u.returncode(0, content.rstrip("\n")))
+        exit(0)
+    else:
+        print(u.returncode(1, content.rstrip("\n")))
+        exit(1)
 
 def gen_script_from_template(entity,template):
     data={
