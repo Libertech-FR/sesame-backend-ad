@@ -55,6 +55,16 @@ if [ $OK -ne 0 ];then
   echo "Installation avortée"
   exit 1
 fi
+#test de connection
+echo "Test de connection"
+cd ${INSTALL}/bin
+./ping.py
+OK=$?
+if [ $OK -eq 0 ];then
+  echo "Test de connexion OK "
+else
+  echo" Erreur de connexion"
+fi
 systemctl restart sesame-daemon
 echo "Vous pouvez completer le fichier de configuration avec les parametres optionnels (voir README.md)"
 echo "Merci "
