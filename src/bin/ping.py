@@ -7,4 +7,4 @@ import backend_utils as u
 config=u.read_config('../etc/config.conf')
 ad.set_config(config)
 ## test connection
-ad.test_conn(cat )
+ad.test_conn()
