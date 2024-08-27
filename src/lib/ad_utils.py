@@ -1,3 +1,4 @@
+"""Utility for AD and sesame """
 import os.path
 import sys
 sys.path.append('.')
@@ -11,6 +12,7 @@ def set_config(config):
     u.__CONFIG__ = config
 
 def open_ssh_conn():
+    """Opening a ssh client connection with parameter in ../etc/config.conf"""
     pkey = paramiko.Ed25519Key.from_private_key_file('../.ssh/id_ed25519')
     client = paramiko.SSHClient()
     policy = paramiko.AutoAddPolicy()
@@ -27,6 +29,7 @@ def open_ssh_conn():
 
 
 def exec_cmd(command):
+    """Exec directly a command (connexion and command)"""
     client=open_ssh_conn()
     stdin, stdout, stderr = client.exec_command(command)
     content=stdout.read().decode()
@@ -34,7 +37,7 @@ def exec_cmd(command):
     return content
 
 def compose_dn(entity):
-
+    """Compose the DN of a identity"""
     rdnValue=u.find_key(entity,'cn')
     x=type(rdnValue)
     if rdnValue is None:
