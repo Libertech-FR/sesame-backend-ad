@@ -26,7 +26,7 @@ def returncode(code,message):
         Retourne le code au format json pour le backend
     '''
     data={}
-    data['code']=code
+    data['status']=code
     data['message']=message
     return json.dumps(data)
 
