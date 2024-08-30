@@ -32,6 +32,8 @@ def returncode(code,message):
 
 def is_backend_concerned(entity):
     peopleType=find_key(entity,config('branchAttr'))
+    if type(peopleType) is list:
+        peopleType=peopleType[0]
     listBackend=config('backendFor')
     if (listBackend.find(peopleType) == -1):
         return False
