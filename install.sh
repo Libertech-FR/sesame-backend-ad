@@ -15,15 +15,19 @@ echo "Copie des fichiers dans ${INSTALL}"
 mkdir $INSTALL/etc
 cp  ./etc/* $INSTALL/etc
 mkdir $INSTALL/bin
-cp ./bin/* $INSTALL/bin
-chmod 700 $INSTALL/bin/*
 mkdir $INSTALL/lib
 PWD=`pwd`
 cp ./lib/__init__.py $INSTALL/lib
 ln -s $PWD/lib/backend_utils.py $INSTALL/lib/backend_utils.py
 ln -s $PWD/lib/ad_utils.py $INSTALL/lib/ad_utils.py
+ln -s $PWD/bin/changepwd.py $INSTALL/bin/changepwd.py
+ln -s $PWD/bin/ping.py $INSTALL/bin/ping.py
+ln -s $PWD/bin/resetpwd.py $INSTALL/bin/resetpwd.py
+ln -s $PWD/bin/upsertidentity.py $INSTALL/bin/upsertidentity.py
+chmod 700 $INSTALL/bin/*
 mkdir $INSTALL/ps1_templates
 cp ./ps1_templates/* $INSTALL/ps1_templates
+chmod 600 $INSTALL/ps1_templates/*
 cp config.yml $INSTALL
 
 echo "Le backend a été installé dans $INSTALL"
