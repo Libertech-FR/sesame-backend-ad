@@ -42,7 +42,6 @@ echo "Génération du fichier de configuration"
 CONFFILE=${INSTALL}/etc/config.conf
 echo "host=${HOST}" > ${CONFFILE}
 echo "user=${USER}" >> ${CONFFILE}
-echo "password=${PASSWORD}" >> ${CONFFILE}
 echo "base=${BASE}" >> ${CONFFILE}
 echo "domain=${DOMAIN}" >> ${CONFFILE}
 echo "backendFor=adm,etd,esn" >> ${CONFFILE}
