@@ -19,12 +19,18 @@ try:
     sshfile = client.open_sftp()
     with open(args.keyfile) as f: new_key = f.read()
     ## ouverture sur windows du authorized_Keys
-    with sshfile.open(".ssh/authorized_keys", mode="a") as message:
+    with sshfile.open("c:/programdata/ssh/administrators_authorized_keys", mode="a") as message:
         message.write(new_key)
         message.close()
-    del client
+    command='powershell;icacls.exe c:/programdata/ssh/administrators_authorized_keys /inheritance:r /grant  "*S-1-5-32-544:F" /grant "SYSTEM:F"'
+    stdin, stdout, stderr = client.exec_command(command)
+    content=stdout.read()
+    print(content)
+    del client, stdin, stdout, stderr
 except paramiko.ssh_exception.SSHException as e:
         e_dict = e.args[0]
-        print("Erreur d'authentification")
+        print(u.returncode(1, "Erreur d'authentification"))
         exit(1)
+    
+
 

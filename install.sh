@@ -2,15 +2,18 @@
 echo "Deploiment du module AD"
 echo "La position determinera l'ordre d'execution des backends (comme dans init.d)"
 read -p "Numero de demarrage du module (2 positions):" NUM
-echo "installation dans backends/${NUM}openldap"
+echo "installation dans backends/${NUM}ad"
 BACKEND=ad
 INSTALL=../../backends/${NUM}${BACKEND}
 if [  -d ../../backends/${NUM}${BACKEND} ];then
-   echo "Repertoire deja existant choisissez un autre numéro"
-   exit 1
-else
-   mkdir ../../backends/${NUM}${BACKEND}
+   read -p "Repertoire déjà existant voulez vous l'écraser ? (O/N)" -i "N" REPONSE
+   if [ "$REPONSE" = "O" ];then
+     rm -rf ../../backends/${NUM}${BACKEND}
+   else
+     exit 1
+   fi
 fi
+mkdir ../../backends/${NUM}${BACKEND}
 echo "Copie des fichiers dans ${INSTALL}"
 mkdir $INSTALL/etc
 cp  ./etc/* $INSTALL/etc
@@ -42,6 +45,7 @@ echo "Génération du fichier de configuration"
 CONFFILE=${INSTALL}/etc/config.conf
 echo "host=${HOST}" > ${CONFFILE}
 echo "user=${USER}" >> ${CONFFILE}
+#echo "password=${PASSWORD}" >> ${CONFFILE}
 echo "base=${BASE}" >> ${CONFFILE}
 echo "domain=${DOMAIN}" >> ${CONFFILE}
 echo "backendFor=adm,etd,esn" >> ${CONFFILE}
@@ -61,12 +65,13 @@ fi
 #test de connection
 echo "Test de connection"
 cd ${INSTALL}/bin
-./ping.py
+BINDDIR=`pwd`
+$BINDDIR/ping.py
 OK=$?
 if [ $OK -eq 0 ];then
   echo "Test de connexion OK "
 else
-  echo" Erreur de connexion"
+  echo " Erreur de connexion"
 fi
 systemctl restart sesame-daemon
 echo "Vous pouvez completer le fichier de configuration avec les parametres optionnels (voir README.md)"
