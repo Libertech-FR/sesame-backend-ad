@@ -1,0 +1,7 @@
+try{
+    Set-ADUser -Identity {{ e.uid }} -Enabled $True
+    Write-Host "user Enabled"
+}catch{
+   Write-Host $_
+    exit 1
+}

@@ -14,7 +14,6 @@ if args.debug == "1" :
 entity=u.readjsoninput()
 config=u.read_config('../etc/config.conf')
 ad.set_config(config)
-ad.__DEBUG__=1
 if u.is_backend_concerned(entity):
   ad.ad_exec_script(entity,'changepassword.template',entity['payload']['uid']+  " '"+ entity['payload']['oldPassword'] + "' '"+ entity['payload']['newPassword'] +"'")
 else:
