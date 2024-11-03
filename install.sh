@@ -26,6 +26,7 @@ ln -s $PWD/lib/ad_utils.py $INSTALL/lib/ad_utils.py
 ln -s $PWD/bin/changepwd.py $INSTALL/bin/changepwd.py
 ln -s $PWD/bin/ping.py $INSTALL/bin/ping.py
 ln -s $PWD/bin/resetpwd.py $INSTALL/bin/resetpwd.py
+ln -s $PWD/bin/delentity.py $INSTALL/bin/delentity.py
 ln -s $PWD/bin/upsertidentity.py $INSTALL/bin/upsertidentity.py
 chmod 700 $INSTALL/bin/*
 mkdir $INSTALL/ps1_templates

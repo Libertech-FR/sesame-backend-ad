@@ -1,0 +1,7 @@
+try{
+    Remove-ADUser -Identity {{ e.uid }} 
+    Write-Host "user deleted"
+}catch{
+   Write-Host $_
+    exit 1
+}
