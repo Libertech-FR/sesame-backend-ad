@@ -1,5 +1,5 @@
 try{
-    Remove-ADUser -Identity {{ e.uid }} 
+    Remove-ADUser -Identity {{ e.uid }} -Confirm:$false
     Write-Host "user deleted"
 }catch{
    Write-Host $_
