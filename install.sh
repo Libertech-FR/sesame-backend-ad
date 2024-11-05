@@ -3,6 +3,7 @@ echo "Deploiment du module AD"
 echo "La position determinera l'ordre d'execution des backends (comme dans init.d)"
 read -p "Numero de demarrage du module (2 positions):" NUM
 echo "installation dans backends/${NUM}ad"
+MAJ="0"
 BACKEND=ad
 INSTALL=../../backends/${NUM}${BACKEND}
 if [  -d ../../backends/${NUM}${BACKEND} ];then
@@ -10,32 +11,40 @@ if [  -d ../../backends/${NUM}${BACKEND} ];then
    if [ "$REPONSE" = "O" ];then
      rm -rf ../../backends/${NUM}${BACKEND}
    else
-     exit 1
+     echo "Mise à jour du backend"
+     MAJ="1"
    fi
 fi
-mkdir ../../backends/${NUM}${BACKEND}
-echo "Copie des fichiers dans ${INSTALL}"
-mkdir $INSTALL/etc
-cp  ./etc/* $INSTALL/etc
-mkdir $INSTALL/bin
-mkdir $INSTALL/lib
+if [ $MAJ = "0" ];then
+  mkdir ../../backends/${NUM}${BACKEND}
+  echo "Copie des fichiers dans ${INSTALL}"
+  mkdir $INSTALL/etc
+  cp  ./etc/* $INSTALL/etc
+  mkdir $INSTALL/bin
+  mkdir $INSTALL/lib
+  mkdir $INSTALL/ps1_templates
+fi
 PWD=`pwd`
 chmod 700 ./bin/*
 cp ./lib/__init__.py $INSTALL/lib
-ln -s $PWD/lib/backend_utils.py $INSTALL/lib/backend_utils.py
-ln -s $PWD/lib/ad_utils.py $INSTALL/lib/ad_utils.py
-ln -s $PWD/bin/changepwd.py $INSTALL/bin/changepwd.py
-ln -s $PWD/bin/ping.py $INSTALL/bin/ping.py
-ln -s $PWD/bin/resetpwd.py $INSTALL/bin/resetpwd.py
-ln -s $PWD/bin/delentity.py $INSTALL/bin/delentity.py
-ln -s $PWD/bin/upsertidentity.py $INSTALL/bin/upsertidentity.py
-ln -s $PWD/bin/activation.py $INSTALL/bin/activation.py
-mkdir $INSTALL/ps1_templates
+ln -s $PWD/lib/backend_utils.py $INSTALL/lib/backend_utils.py 2>/dev/null
+ln -s $PWD/lib/ad_utils.py $INSTALL/lib/ad_utils.py 2>/dev/null
+ln -s $PWD/bin/changepwd.py $INSTALL/bin/changepwd.py 2>/dev/null
+ln -s $PWD/bin/ping.py $INSTALL/bin/ping.py 2>/dev/null
+ln -s $PWD/bin/resetpwd.py $INSTALL/bin/resetpwd.py 2>/dev/null
+ln -s $PWD/bin/delentity.py $INSTALL/bin/delentity.py 2>/dev/null
+ln -s $PWD/bin/upsertidentity.py $INSTALL/bin/upsertidentity.py 2>/dev/null
+ln -s $PWD/bin/activation.py $INSTALL/bin/activation.py 2>/dev/null 
+
 cp ./ps1_templates/* $INSTALL/ps1_templates
 chmod 600 $INSTALL/ps1_templates/*
 cp config.yml $INSTALL
 
 echo "Le backend a été installé dans $INSTALL"
+if [ $MAJ = "1" ];then
+  echo "la mise à jour a été faite"
+  exit 0
+fi
 echo "Configuration"
 read -p "Adresse du serveur AD primaire : " HOST
 read -p "Utilisateur (doit avoir les droits d'administration) : " USER

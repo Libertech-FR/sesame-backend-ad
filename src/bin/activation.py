@@ -16,7 +16,7 @@ config = u.read_config('../etc/config.conf')
 ad.set_config(config)
 if u.is_backend_concerned(entity):
     template = "disable.template"
-    if args.active == 1:
+    if args.active == "1":
         template="enable.template"
     ad.ad_exec_script(entity, template)
 else:
