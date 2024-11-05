@@ -26,7 +26,7 @@ jobs:
           cp copy_ssh_key.py .debpkg/var/lib/sesame-daemon/backends-modules/ad
           chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/ad/install.sh
           chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/ad/copy_ssh_key.py
-          chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/bin/*
+          chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/ad/bin/*
           cp requirements.txt .debpkg/var/lib/sesame-daemon/backends-modules/ad
       - uses: jiro4989/build-deb-action@v3
         with:
