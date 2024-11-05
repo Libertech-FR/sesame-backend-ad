@@ -1,10 +1,8 @@
 host=ad.mydomain.com
 user=administrator
 base=dc=mydomain,dc=com
-userbase=ou=peoples,dc=mydomain,dc=com
-rdnattribute=uid
 branchForEtd=ou=Etudiants
 branchForAdm=ou=Administratifs
 branchForEsn=ou=Enseignants
-branchAttr=supannTypeEntiteAffectation
+branchAttr=supannEntiteAffectationPrincipale
 backendFor=adm,etd,esn
