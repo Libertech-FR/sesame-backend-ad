@@ -15,6 +15,12 @@ def config(key,default=''):
     c=__CONFIG__['config']
     return c.get(key,default)
 
+def get_config():
+    items=__CONFIG__.items('config')
+    data = {}
+    for k, v in items:
+        data[k] = v
+    return data
 
 def readjsoninput():
     input = stdin.read()

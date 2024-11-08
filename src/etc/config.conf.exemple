@@ -6,3 +6,5 @@ branchForAdm=ou=Administratifs
 branchForEsn=ou=Enseignants
 branchAttr=supannEntiteAffectationPrincipale
 backendFor=adm,etd,esn
+debug=0
+mycustomParameter=hello world

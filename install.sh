@@ -34,7 +34,7 @@ ln -s $PWD/bin/ping.py $INSTALL/bin/ping.py 2>/dev/null
 ln -s $PWD/bin/resetpwd.py $INSTALL/bin/resetpwd.py 2>/dev/null
 ln -s $PWD/bin/delentity.py $INSTALL/bin/delentity.py 2>/dev/null
 ln -s $PWD/bin/upsertidentity.py $INSTALL/bin/upsertidentity.py 2>/dev/null
-ln -s $PWD/bin/activation.py $INSTALL/bin/activation.py 2>/dev/null 
+ln -s $PWD/bin/activation.py $INSTALL/bin/activation.py 2>/dev/null
 
 cp ./ps1_templates/* $INSTALL/ps1_templates
 chmod 600 $INSTALL/ps1_templates/*

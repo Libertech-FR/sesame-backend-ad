@@ -93,7 +93,8 @@ def gen_script_from_template(entity,template):
         'base': u.config('base'),
         'dn' : compose_dn(entity),
         'path': dn_superior(compose_dn(entity)),
-        'e': u.make_entry_array(entity)
+        'e': u.make_entry_array(entity),
+        'config': u.get_config()
     }
     environment = jinja2.Environment(loader=FileSystemLoader("../ps1_templates/"))
     template = environment.get_template(template)
@@ -101,6 +102,10 @@ def gen_script_from_template(entity,template):
     return content
 
 def ad_exec_script(entity,template,params=""):
+    if u.config('debug',0) == "1":
+        __DEBUG__ = 1
+    else:
+        __DEBUG__ = 0
     content=gen_script_from_template(entity,template)
     client = open_ssh_conn()
     sshfile = client.open_sftp()
@@ -108,7 +113,7 @@ def ad_exec_script(entity,template,params=""):
     if __DEBUG__ == 0 :
         scriptName='sesame_script.' + str(pid) + '.ps1'
     else:
-        scriptName='sesame_script.ps1'
+        scriptName = os.path.splitext(os.path.basename(sys.argv[0]))[0] + ".ps1"
     with sshfile.open(scriptName, mode="w") as message:
         message.write(content)
     ##execution du script
@@ -117,19 +122,21 @@ def ad_exec_script(entity,template,params=""):
         cmd=scriptName
     else:
         cmd=scriptName + " " + params
-    chan.exec_command('powershell -ExecutionPolicy Bypass -NonInteractive -File ' + cmd)
-    exitCode = chan.recv_exit_status()
-    content = chan.recv(4096).decode('utf-8')
-    error = chan.recv_stderr(4096).decode()
-    if __DEBUG__ == 0:
+    if __DEBUG__ == 0 :
+        chan.exec_command('powershell -ExecutionPolicy Bypass -NonInteractive -File ' + cmd)
+        exitCode = chan.recv_exit_status()
+        content = chan.recv(4096).decode()
+        error = chan.recv_stderr(4096).decode()
         chan = client.get_transport().open_session()
         ##supression du script
         chan.exec_command('del ' + scriptName)
-    del client
-    if exitCode == 0:
-        print(u.returncode(0,content.rstrip("\n")))
-        exit(0)
+        del client
+        if exitCode == 0:
+            print(u.returncode(0,content.rstrip("\n")))
+            exit(0)
+        else:
+            print(u.returncode(1,content.rstrip("\n")))
+            exit(1)
     else:
-        print(u.returncode(1,content.rstrip("\n")))
-        exit(1)
+        print(u.returncode(0, "Backend in debug mode"))
 
