@@ -3,7 +3,7 @@ import os.path
 import sys
 sys.path.append('.')
 import paramiko
-from jinja2 import FileSystemLoader
+from jinja2 import FileSystemLoader,BaseLoader
 import backend_utils as u
 import jinja2
 
@@ -38,26 +38,28 @@ def exec_cmd(command):
 
 def compose_dn(entity):
     """Compose the DN of a identity"""
+    data = {
+        'e': u.make_entry_array(entity),
+        'config': u.get_config()
+    }
+
     rdnValue=u.find_key(entity,'cn')
     x=type(rdnValue)
     if rdnValue is None:
         rdnValue='test'
     branchAttr=u.config('branchAttr','')
-    branch  = ''
+    data['rdnValue']=rdnValue
     if branchAttr != '':
         branchValue=u.find_key(entity,branchAttr)
-
-        match branchValue:
-            case 'etd':
-                branch=u.config('branchForEtd','')
-            case 'esn':
-                branch = u.config('branchForEsn', '')
-            case 'adm':
-                branch = u.config('branchForAdm', '')
-    if branch != '':
-        return 'cn=' + rdnValue+ ',' + branch + "," + u.config('base')
+        key_branch='branchFor' + branchValue
+        branch=u.config(key_branch,'')
+        data['branch']=branch
+        template_string = 'cn={{ rdnValue}},{{ branch }},{{ config.base }}'
     else:
-        return 'cn=' + rdnValue+  "," + u.config('base')
+        template= 'cn={{ rdnValue}},{{ config.base }}'
+    template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(u.config('dnTemplate',template_string))
+    content = template.render(data)
+    return content
 
 def dn_superior(dn):
    tab=dn.split(',')
