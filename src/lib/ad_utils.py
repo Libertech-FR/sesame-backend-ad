@@ -56,7 +56,7 @@ def compose_dn(entity):
         data['branch']=branch
         template_string = 'cn={{ rdnValue}},{{ branch }},{{ config.base }}'
     else:
-        template= 'cn={{ rdnValue}},{{ config.base }}'
+        template_string= 'cn={{ rdnValue}},{{ config.base }}'
     template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(u.config('dnTemplate',template_string))
     content = template.render(data)
     return content
@@ -96,7 +96,7 @@ def gen_script_from_template(entity,template):
         'dn' : compose_dn(entity),
         'path': dn_superior(compose_dn(entity)),
         'e': u.make_entry_array(entity),
-        'config': u.get_config()
+        'config': u.get_config(),
     }
     environment = jinja2.Environment(loader=FileSystemLoader("../ps1_templates/"))
     template = environment.get_template(template)
