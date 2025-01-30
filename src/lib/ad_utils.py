@@ -52,9 +52,12 @@ def compose_dn(entity):
     if branchAttr != '':
         branchValue=u.find_key(entity,branchAttr)
         key_branch='branchFor' + branchValue
-        branch=u.config(key_branch,'')
-        data['branch']=branch
-        template_string = 'cn={{ rdnValue}},{{ branch }},{{ config.base }}'
+        if branchValue != '':
+            branch=u.config(key_branch,'')
+            data['branch']=branch
+            template_string = 'cn={{ rdnValue}},{{ branch }},{{ config.base }}'
+        else:
+            template_string = 'cn={{ rdnValue}},{{ config.base }}'
     else:
         template_string= 'cn={{ rdnValue}},{{ config.base }}'
     template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(u.config('dnTemplate',template_string))

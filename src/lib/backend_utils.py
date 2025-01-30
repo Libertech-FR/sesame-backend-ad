@@ -59,18 +59,23 @@ def _finditem(obj, key):
             item = _finditem(v, key)
             if item is not None:
                 return item
-
+    return ""
 def make_entry_array(entity):
     data={}
     if "identity" in entity['payload']:
         objectclasses = entity['payload']['identity']['identity']['additionalFields']['objectClasses']
         inetOrgPerson=entity['payload']['identity']['identity']['inetOrgPerson']
-        additionalFields=entity['payload']['identity']['identity']['additionalFields']['attributes']
-
+        if 'attributes' in entity['payload']['identity']['identity']['additionalFields']:
+            additionalFields=entity['payload']['identity']['identity']['additionalFields']['attributes']
+        else:
+            additionalFields = {}
     else:
         objectclasses=entity['payload']['additionalFields']['objectClasses']
         inetOrgPerson = entity['payload']['inetOrgPerson']
-        additionalFields = entity['payload']['additionalFields']['attributes']
+        if 'attributes' in entity['payload']['additionalFields']:
+            additionalFields = entity['payload']['additionalFields']['attributes']
+        else:
+            additionalFields = {}
     #inetOrgPerson
     for k,v in inetOrgPerson.items():
         data[k]=str(v)
