@@ -90,6 +90,11 @@ def test_conn():
         exit(1)
 
 def gen_script_from_template(entity,template):
+    dataStatus = 0
+    if 'dataStatus' in entity['payload'].keys():
+        dataStatus = entity['payload']['dataStatus']
+    elif 'dataStatus' in entity['payload']['identity']:
+        dataStatus = entity['payload']['identity']['dataStatus']
     data={
         'domain' :u.config('domain'),
         'base': u.config('base'),
@@ -97,7 +102,7 @@ def gen_script_from_template(entity,template):
         'path': dn_superior(compose_dn(entity)),
         'e': u.make_entry_array(entity),
         'config': u.get_config(),
-        'dataStatus' : entity['payload']['dataStatus']
+        'dataStatus' : dataStatus
     }
 
     environment = jinja2.Environment(loader=FileSystemLoader("../ps1_templates/"))
