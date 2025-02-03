@@ -18,4 +18,4 @@ ad.set_config(config)
 if u.is_backend_concerned(entity):
   ad.ad_exec_script(entity,'upsertidentity.template')
 else:
-  u.returncode(0,"not concerned")
+  print(u.returncode(0,"not concerned"))

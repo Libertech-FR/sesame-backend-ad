@@ -18,4 +18,4 @@ ad.__DEBUG__=1
 if u.is_backend_concerned(entity):
   ad.ad_exec_script(entity,'resetpassword.template',"-user " + entity['payload']['uid']+ " -newp " + entity['payload']['newPassword'])
 else:
-  u.returcode(0,"not concerned")
+  print(u.returncode(0,"not concerned"))

@@ -18,4 +18,4 @@ ad.set_config(config)
 if u.is_backend_concerned(entity):
   ad.ad_exec_script(entity,'delentity.template')
 else:
-  u.returcode(0,"not concerned")
+  print(u.returncode(0,"not concerned"))
