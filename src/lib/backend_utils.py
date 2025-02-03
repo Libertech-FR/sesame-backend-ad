@@ -37,13 +37,24 @@ def returncode(code,message):
     return json.dumps(data)
 
 def is_backend_concerned(entity):
-    peopleType=find_key(entity,config('branchAttr'))
+    br=config('branchAttr')
+    entry=make_entry_array(entity);
+    if config('branchAttr') in entry:
+        peopleType=entry[config('branchAttr')]
+    else:
+        # il n y a pas de branchAttr dans le fichier de config on traitre tout
+        return True
+    listBackend=config('backendFor')
+    c=type(peopleType)
     if type(peopleType) is list:
-        listBackend=config('backendFor')
         for v in peopleType:
           peopleType=v
           if (listBackend.find(peopleType) == -1):
              return False
+    else:
+        if (listBackend.find(peopleType) == -1):
+            return False
+
     return True
 
 def find_key(element, key):
@@ -61,28 +72,35 @@ def _finditem(obj, key):
                 return item
     return ""
 def make_entry_array(entity):
-    data={}
+    data = {}
     if "identity" in entity['payload']:
         objectclasses = entity['payload']['identity']['identity']['additionalFields']['objectClasses']
-        inetOrgPerson=entity['payload']['identity']['identity']['inetOrgPerson']
-        if 'attributes' in entity['payload']['identity']['identity']['additionalFields']:
-            additionalFields=entity['payload']['identity']['identity']['additionalFields']['attributes']
+        inetOrgPerson = entity['payload']['identity']['identity']['inetOrgPerson']
+        addFieldsDict = entity['payload']['identity']['identity']['additionalFields']
+        if 'attributes' in addFieldsDict:
+            additionalFields = entity['payload']['identity']['identity']['additionalFields']['attributes']
         else:
             additionalFields = {}
+
     else:
-        objectclasses=entity['payload']['additionalFields']['objectClasses']
+        objectclasses = entity['payload']['additionalFields']['objectClasses']
         inetOrgPerson = entity['payload']['inetOrgPerson']
-        if 'attributes' in entity['payload']['additionalFields']:
-            additionalFields = entity['payload']['additionalFields']['attributes']
-        else:
-            additionalFields = {}
-    #inetOrgPerson
-    for k,v in inetOrgPerson.items():
-        data[k]=str(v)
+        additionalFields = entity['payload']['additionalFields']['attributes']
+    # inetOrgPerson
+    for k, v in inetOrgPerson.items():
+        if type(v) is int:
+            v = str(v)
+        data[k] = v
 
     for obj in objectclasses:
-        for k,v in additionalFields[obj].items():
-            data[k]=str(v)
+        # recherche si l objectclass est exclu
+        exclusions = config('excludedObjectclasses')
+        if exclusions.find(obj.lower()) == -1:
+            if obj in additionalFields.keys():
+                for k, v in additionalFields[obj].items():
+                    if type(v) is int:
+                        v = str(v)
+                    data[k] = v
     return data
 
 
