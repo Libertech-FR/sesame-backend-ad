@@ -18,6 +18,7 @@ if u.is_backend_concerned(entity):
     template = "disable.template"
     if args.active == "1":
         template="enable.template"
-    ad.ad_exec_script(entity, template)
+    r=ad.ad_exec_script(entity, template)
+    exit(r)
 else:
     print(u.returncode(0, "not concerned"))

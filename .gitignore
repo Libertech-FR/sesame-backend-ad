@@ -163,3 +163,5 @@ cython_debug/
 /src/.ssh
 src/etc/config.conf
 /tests
+unittest/files_ad_utils/id_ed25519
+unittest/files_ad_utils/config.conf

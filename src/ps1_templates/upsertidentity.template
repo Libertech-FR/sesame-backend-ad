@@ -10,6 +10,17 @@ try{
             exit 1
 	    }
 	}
+	# Name changed ?
+	$name=$tab['Name']
+	if ($name -ne "{{ e.cn}}"){
+	    try{
+	        Set-ADUser -Identity "{{ e.uid }}" -PassThru | Rename-ADObject -NewName "{{ e.cn}}"
+	    }catch{
+	        Write-Host $_
+            exit 1
+	    }
+	}
+
 	$UserExists = $true
 }
 catch{
@@ -39,6 +50,8 @@ if ($UserExists -eq $false){
     }
 }else{
     try{
+        ## cas ou le DN à changé nous relisons l entree
+        $tab=Get-ADUser -Filter 'employeeNumber -eq "{{ e.employeeNumber }}" -and employeeType -eq "{{ e.employeeType }}"' -Properties "DistinguishedName"
         $dn=$tab["DistinguishedName"]
         $UserPrincipalName = "{{ e.uid }}" + '@' + "{{ domain }}"
         set-adUser -Identity "$dn" -SamAccountName "{{ e.uid }}" -DisplayName "{{e.displayName}}" -GivenName "{{ e.givenName }}" -EmailAddress "{{ e.mail }}" -UserPrincipalName "$UserPrincipalName"

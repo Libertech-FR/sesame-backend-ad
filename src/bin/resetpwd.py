@@ -14,8 +14,8 @@ if args.debug == "1" :
 entity=u.readjsoninput()
 config=u.read_config('../etc/config.conf')
 ad.set_config(config)
-ad.__DEBUG__=1
 if u.is_backend_concerned(entity):
-  ad.ad_exec_script(entity,'resetpassword.template',"-user " + entity['payload']['uid']+ " -newp " + entity['payload']['newPassword'])
+  r=ad.reset_password(entity)
+  exit(r)
 else:
   print(u.returncode(0,"not concerned"))

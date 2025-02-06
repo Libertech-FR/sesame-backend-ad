@@ -26,6 +26,11 @@ def readjsoninput():
     input = stdin.read()
     return json.loads(input)
 
+def readjsonfile(file):
+    fic=open(file,"r")
+    content=fic.read()
+    fic.close()
+    return json.loads(content)
 
 def returncode(code,message):
     '''
@@ -44,24 +49,29 @@ def is_backend_concerned(entity):
     else:
         # il n y a pas de branchAttr dans le fichier de config on traitre tout
         return True
-    listBackend=config('backendFor')
-    c=type(peopleType)
+    x=config('backendFor')
+    if config('backendFor','') == '':
+        return True
+    listBackend=config('backendFor').split(',')
     if type(peopleType) is list:
         for v in peopleType:
-          peopleType=v
-          if (listBackend.find(peopleType) == -1):
-             return False
+          if v in listBackend :
+             return True
     else:
-        if (listBackend.find(peopleType) == -1):
-            return False
+        if peopleType in listBackend:
+            return True
 
-    return True
+    return False
 
 def find_key(element, key):
     '''
     Check if *keys (nested) exists in `element` (dict).
     '''
-    return _finditem(element,key)
+    r=_finditem(element,key)
+    if r is None:
+        return ""
+    else:
+        return r
 
 def _finditem(obj, key):
     if key in obj: return obj[key]
@@ -70,7 +80,7 @@ def _finditem(obj, key):
             item = _finditem(v, key)
             if item is not None:
                 return item
-    return ""
+
 def make_entry_array(entity):
     data = {}
     if "identity" in entity['payload']:

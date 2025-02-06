@@ -15,6 +15,7 @@ entity=u.readjsoninput()
 config=u.read_config('../etc/config.conf')
 ad.set_config(config)
 if u.is_backend_concerned(entity):
-  ad.ad_exec_script(entity,'changepassword.template',entity['payload']['uid']+  ' "'+ entity['payload']['oldPassword'] + '" "'+ entity['payload']['newPassword'] +'"')
+  r=ad.change_password(entity)
+  exit(r)
 else:
   print(u.returncode(0,"not concerned"))
