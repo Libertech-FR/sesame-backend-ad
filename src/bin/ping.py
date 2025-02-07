@@ -3,8 +3,12 @@ import sys
 sys.path.append('../lib')
 import ad_utils as ad
 import backend_utils as u
+import argparse
 
-config=u.read_config('../etc/config.conf')
+parser = argparse.ArgumentParser()
+parser.add_argument('--config', help='config file', default="../etc/config.conf")
+args = parser.parse_args()
+config=u.read_config(args.config)
 ad.set_config(config)
 ## test connection
 exitCode=ad.test_conn()
