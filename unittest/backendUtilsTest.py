@@ -44,6 +44,13 @@ class BackendUtilsCase(unittest.TestCase):
         # test si branchAttr est vide
         u.__CONFIG__.remove_option('config', 'branchAttr')
         self.assertTrue(u.is_backend_concerned(entry))
+
+    def test_is_backend_concerned_empty(self):
+        # test si quand backendFor est empty le backend est concerné
+        config = u.read_config('./files_backend_utils/config1.conf')
+        entry = u.readjsonfile("./files_backend_utils/local.json")
+        self.assertTrue(type(entry) is dict, 'Not a list')
+        self.assertFalse(u.is_backend_concerned(entry))
     def test_make_entry_array(self):
         config = u.read_config('./files_backend_utils/config1.conf')
         entry = u.readjsonfile("./files_backend_utils/dummy.json")

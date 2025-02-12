@@ -114,14 +114,27 @@ def make_entry_array(entity):
     return data
 
 
-def make_objectclass(entity):
+def make_objectclass(entity,entry):
     data = {}
-    if "identity" in entity['payload']:
-        objectclasses = entity['payload']['identity']['identity']['additionalFields']['objectClasses']
+    objectclasses=[]
+    if entry:
+        current=entry[0][1]['objectClass']
+        for k in current:
+            x=k.decode('UTF-8').lower()
+            objectclasses.append(x)
     else:
-        objectclasses = entity['payload']['additionalFields']['objectClasses']
+        objectclasses.append('top')
+        objectclasses.append('inetOrgPerson')
+    if "identity" in entity['payload']:
+        new_objectclasses = entity['payload']['identity']['identity']['additionalFields']['objectClasses']
+    else:
+        new_objectclasses = entity['payload']['additionalFields']['objectClasses']
 
-    return ['top', 'inetOrgPerson'] + objectclasses
+    for k in new_objectclasses:
+        if k.lower() not in objectclasses:
+            objectclasses.append(k)
+
+    return objectclasses
 
 
 def make_entry_array_without_empty(entity):
