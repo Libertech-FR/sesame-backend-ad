@@ -6,8 +6,10 @@ import paramiko
 from jinja2 import FileSystemLoader,BaseLoader
 import backend_utils as u
 import jinja2
+import os
 __PRIVATE_KEY__ = '../.ssh/id_ed25519'
 __TEMPLATES_PS1__ = "../ps1_templates/"
+__CUSTOM_TEMPLATES_PS1__ = "../ps1_custom_templates/"
 __DEBUG__=0
 def set_private_key(keyfile):
     global __PRIVATE_KEY__
@@ -87,7 +89,7 @@ def dn_superior(dn):
 
 
 def test_conn():
-    environment = jinja2.Environment(loader=FileSystemLoader(__TEMPLATES_PS1__))
+    environment = jinja2.Environment(loader=FileSystemLoader(get_template_dir('ping.template')))
     template = environment.get_template('ping.template')
     content=template.render({})
     scriptName='ping.ps1'
@@ -120,7 +122,7 @@ def gen_script_from_template(entity,template):
         'dataStatus' : dataStatus
     }
 
-    environment = jinja2.Environment(loader=FileSystemLoader(__TEMPLATES_PS1__))
+    environment = jinja2.Environment(loader=FileSystemLoader(get_template_dir(template)))
     template = environment.get_template(template)
     content=template.render(data)
     return content
@@ -206,3 +208,9 @@ def change_password(entity):
                       "-user " + entity['payload']['uid'] + ' -oldp "' + entity['payload']['oldPassword'] + '" -newp "' +
                       entity['payload']['newPassword'] + '"')
     return(r)
+
+def get_template_dir(template):
+    if os.path.exists(__CUSTOM_TEMPLATES_PS1__ + '/' + template):
+        return(__CUSTOM_TEMPLATES_PS1__)
+    else:
+        return(__TEMPLATES_PS1__)
