@@ -209,6 +209,17 @@ def change_password(entity):
                       entity['payload']['newPassword'] + '"')
     return(r)
 
+def lifecycle(entity):
+    before = entity['payload']['before']['lifecycle']
+    after = entity['payload']['after']['lifecycle']
+    template_name=before + "_" + after + ".template"
+    r=0
+    if os.path.exists(__CUSTOM_TEMPLATES_PS1__ + "/" + template_name):
+        r=ad_exec_script(entity, template_name)
+    elif os.path.exists("lifecycle.template"):
+        r=ad_exec_script(entity, "lifecycle.template")
+    return(r)
+
 def get_template_dir(template):
     if os.path.exists(__CUSTOM_TEMPLATES_PS1__ + '/' + template):
         return(__CUSTOM_TEMPLATES_PS1__)

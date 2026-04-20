@@ -125,6 +125,8 @@ class adBinTest (unittest.TestCase):
         result = json.loads(ret["stdout"])
         self.assertEqual(result["status"], 0)
         self.assertEqual(result["message"], "not concerned")
+    def test_15lifecycle_without_script(self):
+        ret = self.run_backend('lifecycle.py', './files_ad_utils/lifecycle.json')
 
 if __name__ == '__main__':
     unittest.main()
