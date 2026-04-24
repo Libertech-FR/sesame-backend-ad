@@ -11,6 +11,7 @@ __PRIVATE_KEY__ = '../.ssh/id_ed25519'
 __TEMPLATES_PS1__ = "../ps1_templates/"
 __CUSTOM_TEMPLATES_PS1__ = "../ps1_custom_templates/"
 __DEBUG__=0
+__TMPDIR__= os.getenv("HOME") + '/tmp'
 def set_private_key(keyfile):
     global __PRIVATE_KEY__
     __PRIVATE_KEY__=keyfile
@@ -56,7 +57,6 @@ def compose_dn(entity):
     }
 
     rdnValue=u.find_key(entity,'cn')
-    x=type(rdnValue)
     if rdnValue is None:
         rdnValue='test'
     branchAttr=u.config('branchAttr','')
@@ -108,19 +108,39 @@ def test_conn():
 
 def gen_script_from_template(entity,template):
     dataStatus = 0
+    type=0
+    data={}
     if 'dataStatus' in entity['payload'].keys():
         dataStatus = entity['payload']['dataStatus']
-    elif 'dataStatus' in entity['payload']['identity']:
-        dataStatus = entity['payload']['identity']['dataStatus']
-    data={
-        'domain' :u.config('domain'),
-        'base': u.config('base'),
-        'dn' : compose_dn(entity),
-        'path': dn_superior(compose_dn(entity)),
-        'e': u.make_entry_array(entity),
-        'config': u.get_config(),
-        'dataStatus' : dataStatus
-    }
+    elif 'identity' in entity['payload'].keys():
+        if 'dataStatus' in entity['payload']['identity']:
+            dataStatus = entity['payload']['identity']['dataStatus']
+        elif 'dataStatus' in entity['payload']['identity']['identity']:
+            dataStatus = entity['payload']['identity']['identity']['dataStatus']
+    elif 'dataStatus' in entity['payload']['before']:
+        dataStatus = entity['payload']['before']['dataStatus']
+        type = 1
+    if type == 0:
+        data={
+            'domain' :u.config('domain'),
+            'base': u.config('base'),
+            'dn' : compose_dn(entity),
+            'path': dn_superior(compose_dn(entity)),
+            'e': u.make_entry_array(entity),
+            'config': u.get_config(),
+            'dataStatus' : dataStatus
+        }
+    else:
+        data = {
+            'domain': u.config('domain'),
+            'base': u.config('base'),
+            'dn': compose_dn(entity),
+            'path': dn_superior(compose_dn(entity)),
+            'e': u.make_entry_array(entity,'after'),
+            'before': u.make_entry_array(entity),
+            'config': u.get_config(),
+            'dataStatus': dataStatus
+        }
 
     environment = jinja2.Environment(loader=FileSystemLoader(get_template_dir(template)))
     template = environment.get_template(template)
@@ -130,42 +150,51 @@ def gen_script_from_template(entity,template):
 def ad_exec_script(entity,template,params=""):
     if u.config('debug',0) == "1":
         __DEBUG__ = 1
+    elif u.config('debug',0) == "2":
+        __DEBUG__ = 2
     else:
         __DEBUG__ = 0
     content=gen_script_from_template(entity,template)
-    client = open_ssh_conn()
-    sshfile = client.open_sftp()
-    pid=os.getpid()
-    if __DEBUG__ == 0 :
-        scriptName='sesame_script.' + str(pid) + '.ps1'
+    if (__DEBUG__ == 2):
+        scriptName = __TMPDIR__ + "/" + os.path.splitext(os.path.basename(sys.argv[0]))[0] + ".ps1"
+        with open(scriptName, "a") as f:
+            f.write(content)
+            print(u.returncode(0, "Backend in debug mode"))
+            return (0)
     else:
-        scriptName = os.path.splitext(os.path.basename(sys.argv[0]))[0] + ".ps1"
-    with sshfile.open(scriptName, mode="w") as message:
-        message.write(content)
-    ##execution du script
-    chan = client.get_transport().open_session()
-    if params == '':
-        cmd=scriptName
-    else:
-        cmd=scriptName + " " + params
-    if __DEBUG__ == 0 :
-        chan.exec_command('powershell -ExecutionPolicy Bypass -NonInteractive -File ' + cmd)
-        exitCode = chan.recv_exit_status()
-        content = chan.recv(4096).decode()
-        error = chan.recv_stderr(4096).decode()
-        chan = client.get_transport().open_session()
-        ##supression du script
-        chan.exec_command('del ' + scriptName)
-        del client
-        if exitCode == 0:
-            print(u.returncode(0,content.rstrip("\n")))
-            return(0)
+        client = open_ssh_conn()
+        sshfile = client.open_sftp()
+        pid=os.getpid()
+        if __DEBUG__ == 0 :
+            scriptName='sesame_script.' + str(pid) + '.ps1'
         else:
-            print(u.returncode(1,content.rstrip("\n")))
-            return(1)
-    else:
-        print(u.returncode(0, "Backend in debug mode"))
-        return(0)
+            scriptName = os.path.splitext(os.path.basename(sys.argv[0]))[0] + ".ps1"
+        with sshfile.open(scriptName, mode="w") as message:
+            message.write(content)
+        ##execution du script
+        chan = client.get_transport().open_session()
+        if params == '':
+            cmd=scriptName
+        else:
+            cmd=scriptName + " " + params
+        if __DEBUG__ == 0 :
+            chan.exec_command('powershell -ExecutionPolicy Bypass -NonInteractive -File ' + cmd)
+            exitCode = chan.recv_exit_status()
+            content = chan.recv(4096).decode()
+            error = chan.recv_stderr(4096).decode()
+            chan = client.get_transport().open_session()
+            ##supression du script
+            chan.exec_command('del ' + scriptName)
+            del client
+            if exitCode == 0:
+                print(u.returncode(0,content.rstrip("\n")))
+                return(0)
+            else:
+                print(u.returncode(1,content.rstrip("\n")))
+                return(1)
+        else:
+            print(u.returncode(0, "Backend in debug mode"))
+            return(0)
 
 def ad_exec_script_content(entity,template,params=""):
     if u.config('debug',0) == "1":
@@ -213,10 +242,11 @@ def lifecycle(entity):
     before = entity['payload']['before']['lifecycle']
     after = entity['payload']['after']['lifecycle']
     template_name=before + "_" + after + ".template"
+    test=os.getcwd()
     r=0
     if os.path.exists(__CUSTOM_TEMPLATES_PS1__ + "/" + template_name):
         r=ad_exec_script(entity, template_name)
-    elif os.path.exists("lifecycle.template"):
+    elif os.path.exists(__CUSTOM_TEMPLATES_PS1__ + "/" +"lifecycle.template"):
         r=ad_exec_script(entity, "lifecycle.template")
     return(r)
 

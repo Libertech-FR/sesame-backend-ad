@@ -81,7 +81,7 @@ def _finditem(obj, key):
             if item is not None:
                 return item
 
-def make_entry_array(entity):
+def make_entry_array(entity,key='before'):
     data = {}
     if "identity" in entity['payload']:
         objectclasses = entity['payload']['identity']['identity']['additionalFields']['objectClasses']
@@ -91,7 +91,17 @@ def make_entry_array(entity):
             additionalFields = entity['payload']['identity']['identity']['additionalFields']['attributes']
         else:
             additionalFields = {}
-
+    elif key in entity['payload']:
+        # cas cycle de vie
+        objectclasses = entity['payload'][key]['additionalFields']['objectClasses']
+        inetOrgPerson = entity['payload'][key]['inetOrgPerson']
+        # ajout lifecyle car en dehors du tableau
+        inetOrgPerson['lifecycle'] = entity['payload'][key]['lifecycle']
+        addFieldsDict = entity['payload'][key]['additionalFields']
+        if 'attributes' in addFieldsDict:
+            additionalFields = entity['payload'][key]['additionalFields']['attributes']
+        else:
+            additionalFields = {}
     else:
         objectclasses = entity['payload']['additionalFields']['objectClasses']
         inetOrgPerson = entity['payload']['inetOrgPerson']
@@ -112,6 +122,7 @@ def make_entry_array(entity):
                         v = str(v)
                     data[k] = v
     return data
+
 
 
 def make_objectclass(entity,entry):

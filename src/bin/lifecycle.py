@@ -15,7 +15,7 @@ entity=u.readjsoninput()
 config=u.read_config('../etc/config.conf')
 ad.set_config(config)
 if u.is_backend_concerned(entity):
-  r=ad.change_password(entity)
+  r = ad.lifecycle(entity)
   exit(r)
 else:
   print(u.returncode(0,"not concerned"))
