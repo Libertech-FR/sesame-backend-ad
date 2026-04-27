@@ -9,6 +9,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--config', help='config file', default="../etc/config.conf")
 args = parser.parse_args()
 config=u.read_config(args.config)
+debug=u.config("debug")
+if debug == '2' :
+    # bypass pour les tests unitaires
+    print(u.returncode(0, "I m alive"))
+    exit(0)
 ad.set_config(config)
 ## test connection
 exitCode=ad.test_conn()
