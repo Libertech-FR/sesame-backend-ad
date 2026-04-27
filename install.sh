@@ -24,6 +24,8 @@ if [ $MAJ = "0" ];then
   mkdir $INSTALL/lib
   mkdir $INSTALL/ps1_templates
   mkdir $INSTALL/ps1_custom_templates
+else
+  mkdir $INSTALL/ps1_custom_templates 2>/dev/null
 fi
 PWD=`pwd`
 chmod 700 ./bin/*
