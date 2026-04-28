@@ -24,21 +24,23 @@ if [ $MAJ = "0" ];then
   mkdir $INSTALL/lib
   mkdir $INSTALL/ps1_templates
   mkdir $INSTALL/ps1_custom_templates
+  PWD=`pwd`
+  chmod 700 ./bin/*
+  cp ./lib/__init__.py $INSTALL/lib
+  ln -s $PWD/lib/backend_utils.py $INSTALL/lib/backend_utils.py 2>/dev/null
+  ln -s $PWD/lib/ad_utils.py $INSTALL/lib/ad_utils.py 2>/dev/null
+  ln -s $PWD/bin/changepwd.py $INSTALL/bin/changepwd.py 2>/dev/null
+  ln -s $PWD/bin/ping.py $INSTALL/bin/ping.py 2>/dev/null
+  ln -s $PWD/bin/resetpwd.py $INSTALL/bin/resetpwd.py 2>/dev/null
+  ln -s $PWD/bin/delentity.py $INSTALL/bin/delentity.py 2>/dev/null
+  ln -s $PWD/bin/upsertidentity.py $INSTALL/bin/upsertidentity.py 2>/dev/null
+  ln -s $PWD/bin/activation.py $INSTALL/bin/activation.py 2>/dev/null
+  ln -s $PWD/ps1_templates/* $INSTALL/ps1_templates
+  chmod 600 $INSTALL/ps1_templates/*
 else
   mkdir $INSTALL/ps1_custom_templates 2>/dev/null
+  mv $INSTALL/config.yml $INSTALL/config.yml.old
 fi
-PWD=`pwd`
-chmod 700 ./bin/*
-cp ./lib/__init__.py $INSTALL/lib
-ln -s $PWD/lib/backend_utils.py $INSTALL/lib/backend_utils.py 2>/dev/null
-ln -s $PWD/lib/ad_utils.py $INSTALL/lib/ad_utils.py 2>/dev/null
-ln -s $PWD/bin/changepwd.py $INSTALL/bin/changepwd.py 2>/dev/null
-ln -s $PWD/bin/ping.py $INSTALL/bin/ping.py 2>/dev/null
-ln -s $PWD/bin/resetpwd.py $INSTALL/bin/resetpwd.py 2>/dev/null
-ln -s $PWD/bin/delentity.py $INSTALL/bin/delentity.py 2>/dev/null
-ln -s $PWD/bin/upsertidentity.py $INSTALL/bin/upsertidentity.py 2>/dev/null
-ln -s $PWD/bin/activation.py $INSTALL/bin/activation.py 2>/dev/null
-ln -s $PWD/ps1_templates/* $INSTALL/ps1_templates
 chmod 600 $INSTALL/ps1_templates/*
 cp config.yml $INSTALL
 
@@ -52,7 +54,7 @@ read -p "Adresse du serveur AD primaire : " HOST
 read -p "Utilisateur (doit avoir les droits d'administration) : " USER
 read -s -p "Mot de passe : " PASSWORD
 echo ""
-read -p "Base ldap AD : " BASE
+read -p "Base ldap AD (exemple : dc=domaine,dc=local pour domaine.local): " BASE
 read -p "Domaine pour UserPrincipalName : " DOMAIN
 echo "Génération du fichier de configuration"
 CONFFILE=${INSTALL}/etc/config.conf
