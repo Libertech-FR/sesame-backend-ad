@@ -248,6 +248,8 @@ def lifecycle(entity):
         r=ad_exec_script(entity, template_name)
     elif os.path.exists(__CUSTOM_TEMPLATES_PS1__ + "/" +"lifecycle.template"):
         r=ad_exec_script(entity, "lifecycle.template")
+    else:
+        print( u.returncode(0, 'lifecycle.template non géré'))
     return(r)
 
 def get_template_dir(template):

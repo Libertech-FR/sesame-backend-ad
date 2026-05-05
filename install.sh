@@ -35,11 +35,14 @@ if [ $MAJ = "0" ];then
   ln -s $PWD/bin/delentity.py $INSTALL/bin/delentity.py 2>/dev/null
   ln -s $PWD/bin/upsertidentity.py $INSTALL/bin/upsertidentity.py 2>/dev/null
   ln -s $PWD/bin/activation.py $INSTALL/bin/activation.py 2>/dev/null
+  ln -s $PWD/bin/lifecycle.py $INSTALL/bin/lifecycle.py 2>/dev/null
   ln -s $PWD/ps1_templates/* $INSTALL/ps1_templates
   chmod 600 $INSTALL/ps1_templates/*
 else
+  tar -czf /tmp/ps1_templates.tgz $PWD/ps1_templates/*
   mkdir $INSTALL/ps1_custom_templates 2>/dev/null
   mv $INSTALL/config.yml $INSTALL/config.yml.old
+  ln -s $PWD/bin/lifecycle.py $INSTALL/bin/lifecycle.py 2>/dev/null
 fi
 chmod 600 $INSTALL/ps1_templates/*
 cp config.yml $INSTALL
