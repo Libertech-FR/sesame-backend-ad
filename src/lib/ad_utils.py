@@ -242,10 +242,12 @@ def lifecycle(entity):
     before = entity['payload']['before']['lifecycle']
     after = entity['payload']['after']['lifecycle']
     template_name=before + "_" + after + ".template"
-    test=os.getcwd()
+    template_name1 = "_" + after + ".template"
     r=0
     if os.path.exists(__CUSTOM_TEMPLATES_PS1__ + "/" + template_name):
         r=ad_exec_script(entity, template_name)
+    elif os.path.exists(__CUSTOM_TEMPLATES_PS1__ + "/" + template_name1):
+        r=ad_exec_script(entity, template_name1)
     elif os.path.exists(__CUSTOM_TEMPLATES_PS1__ + "/" +"lifecycle.template"):
         r=ad_exec_script(entity, "lifecycle.template")
     else:
