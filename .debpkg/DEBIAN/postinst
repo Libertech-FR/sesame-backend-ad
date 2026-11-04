@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Update backends..."
+/var/lib/sesame-daemon/backends-modules/ad/update.sh
