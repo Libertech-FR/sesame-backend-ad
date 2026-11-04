@@ -23,8 +23,10 @@ jobs:
           cp src/config.yml .debpkg/var/lib/sesame-daemon/backends-modules/ad
           cp README.md .debpkg/var/lib/sesame-daemon/backends-modules/ad
           cp install.sh .debpkg/var/lib/sesame-daemon/backends-modules/ad
+          cp update.sh .debpkg/var/lib/sesame-daemon/backends-modules/ad
           cp copy_ssh_key.py .debpkg/var/lib/sesame-daemon/backends-modules/ad
           chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/ad/install.sh
+          chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/ad/update.sh
           chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/ad/copy_ssh_key.py
           chmod 700 .debpkg/var/lib/sesame-daemon/backends-modules/ad/bin/*
           cp requirements.txt .debpkg/var/lib/sesame-daemon/backends-modules/ad
