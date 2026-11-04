@@ -1,0 +1,49 @@
+{#- DN du groupe : cn=<cn>,<branchForGroup>,<base> (ou cn=<cn>,<base> si branchForGroup est vide) -#}
+{%- if config.branchforgroup %}{% set path = config.branchforgroup ~ ',' ~ config.base %}{% else %}{% set path = config.base %}{% endif -%}
+{%- set dn = 'CN=' ~ group.cn ~ ',' ~ path %}
+try{
+    $grp=Get-ADGroup -Filter "Name -eq '{{ group.cn }}'" -Properties "Description","mail"
+    if ($grp -eq $null){
+        # le groupe n existe pas dans l AD : creation
+        $np = @{
+           Name="{{ group.cn }}"
+           SamAccountName="{{ group.cn }}"
+           GroupScope="Global"
+           GroupCategory="Security"
+           Path="{{ path }}"
+        }
+        {% if group.description %}$np["Description"]="{{ group.description }}"{% endif %}
+        {% if group.mail %}$np["OtherAttributes"]=@{ 'mail' = '{{ group.mail }}' }{% endif %}
+        $grp=New-ADGroup @np -PassThru
+        $msg="Group created"
+    }else{
+        # OU changee ?
+        if ($grp.DistinguishedName -ne "{{ dn }}"){
+            Move-ADObject -Identity $grp.ObjectGUID -TargetPath "{{ path }}"
+        }
+        {% if group.description %}Set-ADGroup -Identity $grp.ObjectGUID -Description "{{ group.description }}"{% else %}Set-ADGroup -Identity $grp.ObjectGUID -Clear description{% endif %}
+        {% if group.mail %}Set-ADGroup -Identity $grp.ObjectGUID -Replace @{ 'mail' = '{{ group.mail }}' }{% else %}Set-ADGroup -Identity $grp.ObjectGUID -Clear mail{% endif %}
+        $msg="Group modified"
+    }
+}catch{
+    Write-Host $_
+    exit 1
+}
+# synchronisation des membres
+try{
+    $wanted=@({% for m in members %}"{{ m.uid }}"{% if not loop.last %},{% endif %}{% endfor %})
+    $current=@(Get-ADGroupMember -Identity $grp.ObjectGUID | Where-Object objectClass -eq 'user' | Select-Object -ExpandProperty SamAccountName)
+    $toAdd=@($wanted | Where-Object { $current -notcontains $_ })
+    $toRemove=@($current | Where-Object { $wanted -notcontains $_ })
+    if ($toAdd.Count -gt 0){
+        Add-ADGroupMember -Identity $grp.ObjectGUID -Members $toAdd
+    }
+    if ($toRemove.Count -gt 0){
+        Remove-ADGroupMember -Identity $grp.ObjectGUID -Members $toRemove -Confirm:$false
+    }
+}catch{
+    Write-Host $_
+    exit 1
+}
+Write-Host $msg
+exit 0

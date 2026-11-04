@@ -63,6 +63,12 @@ def is_backend_concerned(entity):
 
     return False
 
+def is_group_concerned(entity):
+    if config('groupFamily', '') == '':
+        return True
+    families = [f.strip() for f in config('groupFamily').split(',')]
+    return entity['payload']['group'].get('family', '') in families
+
 def find_key(element, key):
     '''
     Check if *keys (nested) exists in `element` (dict).

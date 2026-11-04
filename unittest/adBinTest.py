@@ -36,7 +36,8 @@ class adBinTest (unittest.TestCase):
 
     def test_02upsertidentity(self):
         ret = self.run_backend('upsertidentity.py','./files_ad_utils/identity1.json')
-        self.assertEqual(ret['returncode'], 0)
+        result = json.loads(ret["stdout"])
+        self.assertEqual(result['status'], 0)
 
     def test_03delentity(self):
         ret = self.run_backend('delentity.py', './files_ad_utils/identity1.json')
@@ -145,5 +146,19 @@ class adBinTest (unittest.TestCase):
         self.assertEqual(ret['returncode'], 0)
         os.remove('../src/ps1_custom_templates/lifecycle.template')
 
+    def test_17create_group(self):
+        ret = self.run_backend('upsertidentity.py', './files_ad_utils/identity1.json')
+        result = json.loads(ret["stdout"])
+        self.assertEqual(result['status'], 0)
+        ret = self.run_backend('upsertidentity.py', './files_ad_utils/identity2.json')
+        result = json.loads(ret["stdout"])
+        self.assertEqual(result['status'], 0)
+        ret = self.run_backend('groups_add.py', './files_ad_utils/group.json')
+        self.assertEqual(ret['returncode'], 0)
+        result = json.loads(ret["stdout"])
+        self.assertEqual(result["status"], 0)
+
+    def test_19mod_group(self):
+        
 if __name__ == '__main__':
     unittest.main()

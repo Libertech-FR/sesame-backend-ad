@@ -8,3 +8,5 @@ branchAttr=supannEntiteAffectationPrincipale
 backendFor=adm,etd,esn
 debug=0
 mycustomParameter=hello world
+branchForGroup=ou=Groupes
+groupFamily=

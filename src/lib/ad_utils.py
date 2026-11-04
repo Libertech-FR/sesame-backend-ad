@@ -107,6 +107,8 @@ def test_conn():
 
 
 def gen_script_from_template(entity,template):
+    if 'group' in entity['payload'].keys():
+        return gen_group_script_from_template(entity,template)
     dataStatus = 0
     type=0
     data={}
@@ -142,6 +144,19 @@ def gen_script_from_template(entity,template):
             'dataStatus': dataStatus
         }
 
+    environment = jinja2.Environment(loader=FileSystemLoader(get_template_dir(template)))
+    template = environment.get_template(template)
+    content=template.render(data)
+    return content
+
+def gen_group_script_from_template(entity,template):
+    data={
+        'domain': u.config('domain'),
+        'base': u.config('base'),
+        'group': entity['payload']['group'],
+        'members': entity['payload'].get('members',[]),
+        'config': u.get_config()
+    }
     environment = jinja2.Environment(loader=FileSystemLoader(get_template_dir(template)))
     template = environment.get_template(template)
     content=template.render(data)

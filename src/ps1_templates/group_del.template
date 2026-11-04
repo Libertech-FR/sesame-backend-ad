@@ -1,0 +1,25 @@
+{#- DN du groupe : cn=<cn>,<branchForGroup>,<base> (ou cn=<cn>,<base> si branchForGroup est vide) -#}
+{%- if config.branchforgroup %}{% set path = config.branchforgroup ~ ',' ~ config.base %}{% else %}{% set path = config.base %}{% endif -%}
+{%- set dn = 'CN=' ~ group.cn ~ ',' ~ path %}
+try{
+    Remove-ADGroup -Identity "{{ dn }}" -Confirm:$false
+    Write-Host "group deleted"
+}catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException]{
+    # absent du DN attendu : recherche par nom (groupe dans une autre OU)
+    try{
+        $grp=Get-ADGroup -Filter "Name -eq '{{ group.cn }}'"
+        if ($grp -eq $null){
+            # deja absent de l AD : on considere la suppression comme faite
+            Write-Host "group not found"
+        }else{
+            Remove-ADGroup -Identity $grp.ObjectGUID -Confirm:$false
+            Write-Host "group deleted"
+        }
+    }catch{
+        Write-Host $_
+        exit 1
+    }
+}catch{
+   Write-Host $_
+    exit 1
+}
